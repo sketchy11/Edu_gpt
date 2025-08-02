@@ -1,28 +1,31 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const { Configuration, OpenAIApi } = require('openai');
+const express = require("express");
+const { Configuration, OpenAIApi } = require("openai");
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 const configuration = new Configuration({
-  apiKey: 'YOUR_OPENAI_API_KEY'  // Replace this with your OpenAI key
+  apiKey: process.env.OPENAI_API_KEY,
 });
+
 const openai = new OpenAIApi(configuration);
 
-app.post('/ask', async (req, res) => {
-  const { message } = req.body;
+app.post("/ask", async (req, res) => {
+  const { question } = req.body;
+
   try {
     const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: message }],
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: question }],
     });
-    res.json({ reply: response.data.choices[0].message.content });
+
+    res.json({ answer: response.data.choices[0].message.content });
   } catch (error) {
-    res.status(500).send(error.toString());
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
