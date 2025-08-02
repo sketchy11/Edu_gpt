@@ -1,8 +1,12 @@
 const express = require("express");
 const OpenAI = require("openai");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
+
+// ✅ Static files serve karne ke liye — pehle hi likho
+app.use(express.static(path.join(__dirname)));
 
 // OpenAI client setup
 const openai = new OpenAI({
@@ -25,9 +29,8 @@ app.post("/ask", async (req, res) => {
   }
 });
 
+// ✅ Server start
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-const path = require('path');
-app.use(express.static(path.join(__dirname)));
