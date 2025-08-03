@@ -5,14 +5,20 @@ const path = require("path");
 const app = express();
 app.use(express.json());
 
-// ✅ Static files serve karne ke liye — pehle hi likho
-app.use(express.static(path.join(__dirname)));
+// Static files serve karna
+app.use(express.static(path.join(__dirname, "public")));
 
-// OpenAI client setup
+// Root route par test.html serve karna
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "test.html"));
+});
+
+// OpenAI setup
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// POST /ask route
 app.post("/ask", async (req, res) => {
   const { question } = req.body;
 
@@ -29,7 +35,7 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-// ✅ Server start
+// Server start
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
